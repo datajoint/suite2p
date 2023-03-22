@@ -13,7 +13,8 @@ install_deps = ['importlib-metadata',
         'scipy>=1.4.0',
         'h5py',
         'sbxreader',
-        'scikit-learn',]
+        'scikit-learn',
+        'nd2']
 
 gui_deps = [
         "pyqt5",
