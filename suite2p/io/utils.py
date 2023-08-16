@@ -167,21 +167,29 @@ def get_nd2_list(ops):
     if ops['look_one_level_down'], then all nd2's in all folders + one level down
     """
     froot = ops['data_path']
-    fold_list = ops['data_path']
-    fsall = []
-    nfs = 0
-    first_tiffs = []
-    for k,fld in enumerate(fold_list):
-        fs, ftiffs = list_files(fld, ops['look_one_level_down'],
-                                ["*.nd2"])
-        fsall.extend(fs)
-        first_tiffs.extend(list(ftiffs))
-    if len(fs)==0:
-        print('Could not find any nd2 files')
-        raise Exception('no nd2s')
-    else:
-        ops['first_tiffs'] = np.array(first_tiffs).astype('bool')
+    if 'tiff_list' in ops:
+        fsall = []
+        for tif in ops['tiff_list']:
+            fsall.append(os.path.join(froot[0], tif))
+        ops['first_tiffs'] = np.zeros((len(fsall),), dtype='bool')
+        ops['first_tiffs'][0] = True
         print('** Found %d nd2 files - converting to binary **'%(len(fsall)))
+    else:
+        fold_list = ops['data_path']
+        fsall = []
+        nfs = 0
+        first_tiffs = []
+        for k,fld in enumerate(fold_list):
+            fs, ftiffs = list_files(fld, ops['look_one_level_down'],
+                                    ["*.nd2"])
+            fsall.extend(fs)
+            first_tiffs.extend(list(ftiffs))
+        if len(fs)==0:
+            print('Could not find any nd2 files')
+            raise Exception('no nd2s')
+        else:
+            ops['first_tiffs'] = np.array(first_tiffs).astype('bool')
+            print('** Found %d nd2 files - converting to binary **'%(len(fsall)))
     return fsall, ops
 
 
