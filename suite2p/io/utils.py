@@ -186,7 +186,7 @@ def get_nd2_list(ops):
             fs, ftiffs = list_files(fld, ops["look_one_level_down"], ["*.nd2"])
             fsall.extend(fs)
             first_tiffs.extend(list(ftiffs))
-        if len(fs) == 0:
+        if len(fsall) == 0:
             print("Could not find any nd2 files")
             raise Exception("no nd2s")
         else:
