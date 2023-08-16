@@ -174,8 +174,8 @@ def get_nd2_list(ops):
     froot = ops["data_path"]
     fsall = []
     if "tiff_list" in ops:
-        for tif in ops["tiff_list"]:
-            fsall.append(os.path.join(froot[0], tif))
+        for nd2_file in ops["tiff_list"]:
+            fsall.append(os.path.join(froot[0], nd2_file))
         ops["first_tiffs"] = np.zeros((len(fsall),), dtype="bool")
         ops["first_tiffs"][0] = True
     else:
