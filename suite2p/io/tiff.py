@@ -14,6 +14,14 @@ from tifffile import imread, TiffFile, TiffWriter
 
 from . import utils
 
+try:
+    from ScanImageTiffReader import ScanImageTiffReader
+
+    HAS_SCANIMAGE = True
+except ImportError:
+    ScanImageTiffReader = None
+    HAS_SCANIMAGE = False
+
 
 def generate_tiff_filename(
     functional_chan: int, align_by_chan: int, save_path: str, k: int, ichan: bool
@@ -82,19 +90,19 @@ def open_tiff(file: str, sktiff: bool) -> Tuple[TiffFile, int]:
     if sktiff:
         tif = TiffFile(file)
         Ltif = len(tif.pages)
-    # else:
-    #    tif = ScanImageTiffReader(file)
-    #    Ltif = 1 if len(tif.shape()) < 3 else tif.shape()[0]  # single page tiffs
+    else:
+        tif = ScanImageTiffReader(file)
+        Ltif = 1 if len(tif.shape()) < 3 else tif.shape()[0]  # single page tiffs
     return tif, Ltif
 
 
 def use_sktiff_reader(tiff_filename, batch_size: Optional[int] = None) -> bool:
     """Returns False if ScanImageTiffReader works on the tiff file, else True (in which case use tifffile)."""
     try:
-        # with ScanImageTiffReader(tiff_filename) as tif:
-        #    tif.data() if len(tif.shape()) < 3 else tif.data(
-        #        beg=0, end=np.minimum(batch_size, tif.shape()[0] - 1)
-        #    )
+        with ScanImageTiffReader(tiff_filename) as tif:
+            tif.data() if len(tif.shape()) < 3 else tif.data(
+                beg=0, end=np.minimum(batch_size, tif.shape()[0] - 1)
+            )
         return False
     except:
         print(
