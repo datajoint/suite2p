@@ -166,7 +166,7 @@ def tiff_to_binary(ops):
             nfr = min(Ltif - ix, batch_size)
             # tiff reading
             if use_sktiff:
-                im = imread(file, pages=range(ix, ix + nfr))
+                im = imread(file, key=range(ix, ix + nfr))
             elif Ltif == 1:
                 im = tif.data()
             else:
