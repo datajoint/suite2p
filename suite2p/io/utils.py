@@ -125,7 +125,8 @@ def list_files(froot, look_one_level_down, exts):
         for folder_down in fdir:
             fsnew = []
             for e in exts:
-                lpath = os.path.join(folder_down, e)
+                #lpath = os.path.join(folder_down, e)
+                lpath = os.path.join(folder_down, 'raw_imaging_data',e)
                 fsnew.extend(glob.glob(lpath))
             fsnew = natsorted(set(fsnew))
             if len(fsnew) > 0:
@@ -168,7 +169,7 @@ def get_tif_list(ops):
     if ops["look_one_level_down"], then all tiffs in all folders + one level down
     if ops["tiff_list"], then ops["data_path"][0] / ops["tiff_list"] ONLY
     """
-    froot = ops["data_path"]
+    froot = ops['data_path']
     # use a user-specified list of tiffs
     if "tiff_list" in ops:
         fsall = []

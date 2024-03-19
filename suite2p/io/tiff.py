@@ -179,7 +179,7 @@ def tiff_to_binary(ops):
     ntotal = 0
     for ik, file in enumerate(fs):
         # open tiff
-        tif, Ltif = open_tiff(file, use_sktiff)
+        tif, Ltif = open_tiff(file, use_sktiff) #returns tif and its length
         # keep track of the plane identity of the first frame (channel identity is assumed always 0)
         if ops["first_tiffs"][ik]:
             which_folder += 1
@@ -280,23 +280,31 @@ def mesoscan_to_binary(ops):
         ops["nrois"] = len(ops["lines"])
     nplanes = ops["nplanes"]
 
-    print("NOTE: nplanes %d nrois %d => ops['nplanes'] = %d" %
-          (nplanes, ops["nrois"], ops["nrois"] * nplanes))
-    # multiply lines across planes
-    lines = ops["lines"].copy()
-    dy = ops["dy"].copy()
-    dx = ops["dx"].copy()
-    ops["lines"] = [None] * nplanes * ops["nrois"]
-    ops["dy"] = [None] * nplanes * ops["nrois"]
-    ops["dx"] = [None] * nplanes * ops["nrois"]
-    ops["iplane"] = np.zeros((nplanes * ops["nrois"],), np.int32)
-    for n in range(ops["nrois"]):
-        ops["lines"][n::ops["nrois"]] = [lines[n]] * nplanes
-        ops["dy"][n::ops["nrois"]] = [dy[n]] * nplanes
-        ops["dx"][n::ops["nrois"]] = [dx[n]] * nplanes
-        ops["iplane"][n::ops["nrois"]] = np.arange(0, nplanes, 1, int)
-    ops["nplanes"] = nplanes * ops["nrois"]
-    ops1 = utils.init_ops(ops)
+    if "slices" not in ops: #this is s2p default, where each roi is defined on all planes
+        print("NOTE: nplanes %d nrois %d => ops['nplanes'] = %d" %
+              (nplanes, ops["nrois"], ops["nrois"] * nplanes))
+        # multiply lines across planes 
+        lines = ops["lines"].copy()
+        dy = ops["dy"].copy()
+        dx = ops["dx"].copy()
+        ops["lines"] = [None] * nplanes * ops["nrois"]
+        ops["dy"] = [None] * nplanes * ops["nrois"]
+        ops["dx"] = [None] * nplanes * ops["nrois"]
+        ops["iplane"] = np.zeros((nplanes * ops["nrois"],), np.int32)
+        for n in range(ops["nrois"]):
+            ops["lines"][n::ops["nrois"]] = [lines[n]] * nplanes
+            ops["dy"][n::ops["nrois"]] = [dy[n]] * nplanes
+            ops["dx"][n::ops["nrois"]] = [dx[n]] * nplanes
+            ops["iplane"][n::ops["nrois"]] = np.arange(0, nplanes, 1, int)
+        ops["nplanes"] = nplanes * ops["nrois"]
+    else #each roi has uniquely defined slice nr. and lines indexes so no need to multiply across planes
+        print("NOTE: nslices %d nrois %d => ops['nplanes'] = %d" %
+              (len(ops["slices"]), ops["nrois"], ops["nrois"]))
+        ops["nplanes"] = ops["nrois"] #WARNING ops["nplanes"] is now total number of FOVs, not nr of unique zplanes!
+        ops["iplane"] = ops["slices"] #WARNING ops["iplane"] is now the list of slice indices!
+
+    ops1 = utils.init_ops(ops) #this makes a list of ops files, one per FOV
+
 
     # this shouldn"t make it here
     if "lines" not in ops:
@@ -346,7 +354,7 @@ def mesoscan_to_binary(ops):
                 im = im[:nfr, :, :]
             nframes = im.shape[0]
 
-            for j in range(0, ops["nplanes"]):
+            for j in range(0, ops["nplanes"]): #loop over FOVs
                 jlines = np.array(ops1[j]["lines"]).astype(np.int32)
                 jplane = ops1[j]["iplane"]
                 if ik == 0 and ix == 0:

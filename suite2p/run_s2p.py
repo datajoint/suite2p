@@ -387,17 +387,18 @@ def run_s2p(ops={}, db={}, server={}):
 
     """
     t0 = time.time()
+    subfolders = ops['subfolders'] #SP quick patch
     ops = {**default_ops(), **ops, **db}
     if isinstance(ops["diameter"], list) and len(
             ops["diameter"]) > 1 and ops["aspect"] == 1.0:
         ops["aspect"] = ops["diameter"][0] / ops["diameter"][1]
     print(db)
-    if "save_path0" not in ops or len(ops["save_path0"]) == 0:
-        if ops.get("h5py"):
-            ops["save_path0"] = os.path.split(
-                ops["h5py"][0])[0]  # Use first element in h5py key to find save_path
-        elif ops.get("nwb_file"):
-            ops["save_path0"] = os.path.split(ops["nwb_file"])[0]
+    ops['subfolders']=subfolders #SP quick patch
+    if 'save_path0' not in ops or len(ops['save_path0'])==0:
+        if ops.get('h5py'):
+            ops['save_path0'] = os.path.split(ops['h5py'][0])[0] # Use first element in h5py key to find save_path
+        elif ops.get('nwb_file'):
+            ops['save_path0'] = os.path.split(ops['nwb_file'])[0]
         else:
             ops["save_path0"] = ops["data_path"][0]
 
