@@ -249,10 +249,6 @@ def load_files(name):
         basename, fname = os.path.split(name)
         goodfolder = True
         try:
-            #Fcell = np.load(basename + "/mpci.ROIActivityF.npy")
-            #Fneu = np.load(basename + "/mpci.ROINeuropilActivityF.npy")
-            #Fcell = Fcell.T
-            #Fneu = Fneu.T
             Fcell = np.load(basename + "/F.npy")
             Fneu = np.load(basename + "/Fneu.npy")
         except (ValueError, OSError, RuntimeError, TypeError, NameError):
@@ -260,8 +256,6 @@ def load_files(name):
                   "(F.npy/Fneu.npy)")
             goodfolder = False
         try:
-            #Spks = np.load(basename + "/mpci.ROIActivityDeconvolved.npy")
-            #Spks = Spks.T
             Spks = np.load(basename + "/spks.npy")
         except (ValueError, OSError, RuntimeError, TypeError, NameError):
             print("there are no spike deconvolved traces in this folder "

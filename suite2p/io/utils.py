@@ -125,8 +125,7 @@ def list_files(froot, look_one_level_down, exts):
         for folder_down in fdir:
             fsnew = []
             for e in exts:
-                #lpath = os.path.join(folder_down, e)
-                lpath = os.path.join(folder_down, 'raw_imaging_data',e)
+                lpath = os.path.join(folder_down, e)
                 fsnew.extend(glob.glob(lpath))
             fsnew = natsorted(set(fsnew))
             if len(fsnew) > 0:
