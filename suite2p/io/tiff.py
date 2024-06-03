@@ -297,7 +297,7 @@ def mesoscan_to_binary(ops):
             ops["dx"][n::ops["nrois"]] = [dx[n]] * nplanes
             ops["iplane"][n::ops["nrois"]] = np.arange(0, nplanes, 1, int)
         ops["nplanes"] = nplanes * ops["nrois"]
-    else #each roi has uniquely defined slice nr. and lines indexes so no need to multiply across planes
+    else:  #each roi has uniquely defined slice nr. and lines indexes so no need to multiply across planes
         print("NOTE: nslices %d nrois %d => ops['nplanes'] = %d" %
               (len(ops["slices"]), ops["nrois"], ops["nrois"]))
         ops["nplanes"] = ops["nrois"] #WARNING ops["nplanes"] is now total number of FOVs, not nr of unique zplanes!
